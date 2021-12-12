@@ -1,3 +1,5 @@
+using System;
+
 namespace Indexers
 {
     using System.Linq;
@@ -34,7 +36,7 @@ namespace Indexers
         {
             if (!this.pitagoricTable.GetRow(7).Select(t => t.Item2).SequenceEqual(this.seven))
             {
-                Assert.Fail("Wrong implementation");
+                Assert.Fail("Wrong implementation\n");
             }
         }
 
