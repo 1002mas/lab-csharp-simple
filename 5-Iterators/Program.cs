@@ -22,7 +22,6 @@ namespace Iterators
                     numbers[i] = rand.Next(len);
                 }
             }
-
             IDictionary<int, int> occurrences = numbers
                 .Map(optN => {
                     Console.Write(optN.ToString() + ",");
@@ -44,7 +43,6 @@ namespace Iterators
 
                     return d;
                 });
-
             Console.WriteLine();
 
             foreach (KeyValuePair<int, int> kv in occurrences)
