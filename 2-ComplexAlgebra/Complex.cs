@@ -66,8 +66,8 @@ namespace ComplexAlgebra
                 return $"i{Imaginary}";
             }
 
-            string ImString = Math.Abs(Imaginary).CompareTo(1) == 0 ? "" : Math.Abs(Imaginary).ToString();
-            return $"{Real}{this.PrintMinusOrPlus()}i{ImString}";
+            string imString = Math.Abs(Imaginary).CompareTo(1) == 0 ? "" : Math.Abs(Imaginary).ToString();
+            return $"{Real}{this.PrintMinusOrPlus()}i{imString}";
         }
     }
 }

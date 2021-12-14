@@ -14,7 +14,6 @@ namespace Arrays
         /// <returns>the <see cref="Complex"/> number with highest modulus in <paramref name="array"/>,
         /// or <c>null</c> in case <paramref name="array"/> is empty</returns>
         /// <exception cref="NullReferenceException">if <paramref name="array"/> is <c>null</c></exception>
-        /// TODO: implement this method
         /// <seealso cref="Examples.Max"/>
         public static Complex MaxModulus(Complex[] array)
         {
@@ -41,7 +40,7 @@ namespace Arrays
             Complex[] arrayClone = new Complex[array.Length];
             for (int i = 0; i < array.Length; i++)
             {
-                arrayClone[i] = new Complex(array[i].Real, array[i].Imaginary);
+                arrayClone[i] = array[i];
             }
             return arrayClone; 
         }
