@@ -11,90 +11,32 @@ namespace Indexers
     /// <inheritdoc cref="IMap2D{TKey1,TKey2,TValue}" />
     public class Map2D<TKey1, TKey2, TValue> : IMap2D<TKey1, TKey2, TValue>
     {
-        private const int InitialSize = 50;//initial arrays sizes
-        private int _size = InitialSize;
-        private Tuple<TKey1, TKey2>[] _keys = new Tuple<TKey1, TKey2>[InitialSize];
-        private TValue[] _values = new TValue[InitialSize];
+        private Dictionary<Tuple<TKey1, TKey2>, TValue> _map = new Dictionary<Tuple<TKey1, TKey2>, TValue>();
 
         /// <inheritdoc cref="IMap2D{TKey1, TKey2, TValue}.NumberOfElements" />
         public int NumberOfElements
         {
-            get;
-            private set;
-        } = 0;
+            get => _map.Count;
+        }
 
         /// <inheritdoc cref="IMap2D{TKey1, TKey2, TValue}.this" />
         public TValue this[TKey1 key1, TKey2 key2]
         {
-            get  {
-                for(int i=0;i<NumberOfElements;i++)
-                {
-                    if (_keys[i].Item1.Equals(key1) && _keys[i].Item2.Equals(key2))
-                    {
-                        return _values[i];
-                    }
-                }
-
-                throw new KeyNotFoundException();
-            }
-            set
-            {
-                bool found = false;
-                for(int i=0;i<NumberOfElements;i++)
-                {
-                    if (_keys[i].Item1.Equals(key1) && _keys[i].Item2.Equals(key2))
-                    {
-                        _values[i] = value;
-                        found = true;
-                        break;
-                    }
-                }
-
-                if (!found)
-                {
-                    AddNewElement(key1, key2, value);
-                }
-            }
-        }
-
-        private void ReallocArrays()
-        {
-            TValue[] values = _values;
-            Tuple<TKey1, TKey2>[] keys = _keys;
-            _size *= 3;
-            _values = new TValue[_size];
-            _keys = new Tuple<TKey1, TKey2>[_size];
-            for (int i = 0; i < keys.Length; i++)
-            {
-                _keys[i] = keys[i];
-                _values[i] = values[i];
-            }
-        }
-
-        private void AddNewElement(TKey1 key1, TKey2 key2, TValue value)
-        {
-            if (NumberOfElements >= _size)
-            {
-                ReallocArrays();
-            }
-
-            _keys[NumberOfElements] = new Tuple<TKey1, TKey2>(key1, key2);
-            _values[NumberOfElements] = value;
-            NumberOfElements++;
+            get => _map[Tuple.Create(key1, key2)];
+            set => _map[Tuple.Create(key1, key2)] = value;
         }
 
         /// <inheritdoc cref="IMap2D{TKey1, TKey2, TValue}.GetRow(TKey1)" />
         public IList<Tuple<TKey2, TValue>> GetRow(TKey1 key1)
         {
             IList<Tuple<TKey2, TValue>> res = new List<Tuple<TKey2, TValue>>();
-            for (int i = 0; i < NumberOfElements; i++)
+            foreach (var row in _map)
             {
-                if (_keys[i].Item1.Equals(key1))
+                if (row.Key.Item1.Equals(key1))
                 {
-                    res.Add(new Tuple<TKey2, TValue>(_keys[i].Item2, _values[i]));
+                    res.Add(Tuple.Create(row.Key.Item2, row.Value));
                 }
             }
-
             return res;
         }
 
@@ -102,14 +44,13 @@ namespace Indexers
         public IList<Tuple<TKey1, TValue>> GetColumn(TKey2 key2)
         {
             IList<Tuple<TKey1, TValue>> res = new List<Tuple<TKey1, TValue>>();
-            for (int i = 0; i < NumberOfElements; i++)
+            foreach (var row in _map)
             {
-                if (_keys[i].Item2.Equals(key2))
+                if (row.Key.Item2.Equals(key2))
                 {
-                    res.Add(new Tuple<TKey1, TValue>(_keys[i].Item1, _values[i]));
+                    res.Add(Tuple.Create(row.Key.Item1, row.Value));
                 }
             }
-
             return res;
         }
 
@@ -117,11 +58,10 @@ namespace Indexers
         public IList<Tuple<TKey1, TKey2, TValue>> GetElements()
         {
             IList<Tuple<TKey1, TKey2, TValue>> res = new List<Tuple<TKey1, TKey2, TValue>>();
-            for (int i = 0; i < NumberOfElements; i++)
+            foreach (var row in _map)
             {
-                res.Add(new Tuple<TKey1, TKey2, TValue>(_keys[i].Item1, _keys[i].Item2, _values[i]));
+                    res.Add(new Tuple<TKey1, TKey2, TValue>(row.Key.Item1, row.Key.Item2, row.Value));
             }
-
             return res;
         }
 
@@ -149,18 +89,30 @@ namespace Indexers
         /// <inheritdoc cref="object.GetHashCode"/>
         public override int GetHashCode()
         {
-            return HashCode.Combine(_keys, _values);
+            return (_map != null ? _map.GetHashCode() : 0);
+        }
+
+        protected bool Equals(Map2D<TKey1, TKey2, TValue> other)
+        {
+            return Equals(_map, other._map);
+        }
+
+        public override bool Equals(object obj)
+        {
+            if (ReferenceEquals(null, obj)) return false;
+            if (ReferenceEquals(this, obj)) return true;
+            if (obj.GetType() != this.GetType()) return false;
+            return Equals((Map2D<TKey1, TKey2, TValue>) obj);
         }
 
         /// <inheritdoc cref="IMap2D{TKey1, TKey2, TValue}.ToString"/>
         public override string ToString()
         {
             string res = "{\n";
-            for (int i = 0; i < NumberOfElements; i++)
+            foreach (var row in _map)
             {
-                res = $"{res}[{_keys[i].Item1}, {_keys[i].Item2}]->[{_values[i]}],\n";
+                res = $"{res}[{row.Key.Item1}, {row.Key.Item2}]->[{row.Value}],\n";
             }
-
             res = res.Substring(0, res.Length - 1);
             res = $"{res}}}";
             return res;
