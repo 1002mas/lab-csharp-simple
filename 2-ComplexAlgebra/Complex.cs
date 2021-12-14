@@ -46,6 +46,28 @@ namespace ComplexAlgebra
 
         private string PrintMinusOrPlus() => Imaginary >= 0 ? "+" : "-";
 
-        public override string ToString() => $"{Real}{this.PrintMinusOrPlus()}i{Math.Abs(Imaginary)}";
+        public override string ToString()
+        {
+            if (Imaginary == 0d)
+            {
+                return $"{Real}";
+            }
+
+            if (Real == 0d)
+            {
+                if (Imaginary.CompareTo(1) == 0)
+                {
+                    return "i";
+                }
+                if (Imaginary.CompareTo(-1) == 0)
+                {
+                    return "-i";
+                }
+                return $"i{Imaginary}";
+            }
+
+            string ImString = Math.Abs(Imaginary).CompareTo(1) == 0 ? "" : Math.Abs(Imaginary).ToString();
+            return $"{Real}{this.PrintMinusOrPlus()}i{ImString}";
+        }
     }
 }
